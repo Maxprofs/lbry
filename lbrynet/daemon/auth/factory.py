@@ -34,9 +34,9 @@ class AuthJSONRPCResource(resource.Resource):
         request.setHeader('expires', '0')
         return self if name == '' else resource.Resource.getChild(self, name, request)
 
-    def getServerFactory(self) -> server.Site:
-        factory = HTTPSJSONRPCFactory if conf.settings['use_https'] else HTTPJSONRPCFactory
-        if conf.settings['use_auth_http']:
+    def getServerFactory(self, use_authentication: bool, use_https: bool) -> server.Site:
+        factory = HTTPSJSONRPCFactory if use_https else HTTPJSONRPCFactory
+        if use_authentication:
             log.info("Using authenticated API")
             Keyring.generate_api_key()
             checker = PasswordChecker(Keyring)

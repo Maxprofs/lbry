@@ -187,8 +187,8 @@ class AuthJSONRPCServer(AuthorizedBase):
     allowed_during_startup = []
     component_attributes = {}
 
-    def __init__(self, analytics_manager=None, component_manager=None, use_authentication=None, to_skip=None,
-                 looping_calls=None, reactor=None):
+    def __init__(self, analytics_manager=None, component_manager=None, use_authentication=None, use_https=None,
+                 to_skip=None, looping_calls=None, reactor=None):
         if not reactor:
             from twisted.internet import reactor
         self.analytics_manager = analytics_manager or analytics.Manager.new_instance()
@@ -200,6 +200,7 @@ class AuthJSONRPCServer(AuthorizedBase):
         self.looping_call_manager = LoopingCallManager({n: lc for n, (lc, t) in (looping_calls or {}).items()})
         self._looping_call_times = {n: t for n, (lc, t) in (looping_calls or {}).items()}
         self._use_authentication = use_authentication or conf.settings['use_auth_http']
+        self._use_https = use_https or conf.settings['use_https']
         self.listening_port = None
         self._component_setup_deferred = None
         self.announced_startup = False
@@ -281,7 +282,7 @@ class AuthJSONRPCServer(AuthorizedBase):
         return d
 
     def get_server_factory(self):
-        return AuthJSONRPCResource(self).getServerFactory()
+        return AuthJSONRPCResource(self).getServerFactory(self._use_authentication, self._use_https)
 
     def _set_headers(self, request, data, update_secret=False):
         if conf.settings['allowed_origin']:
