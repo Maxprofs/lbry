@@ -40,6 +40,8 @@ setup(
         'docopt',
         'colorama==0.3.7',
         'six',
+        'secretstorage',
+        'dbus-python',
         'keyring'
     ],
     extras_require={
