@@ -9,6 +9,7 @@ jobs:
     - stage: code quality
       name: "pylint lbrynet"
       install:
+        - sudo apt-get install libdbus-glib-1-dev
         - pip install pylint
         - pip install git+https://github.com/lbryio/torba.git
         - pip install git+https://github.com/lbryio/lbryschema.git
@@ -19,6 +20,7 @@ jobs:
       stage: test
       name: "Unit Tests w/ Python 3.7"
       install:
+        - sudo apt-get install libdbus-glib-1-dev
         - pip install coverage
         - pip install git+https://github.com/lbryio/torba.git
         - pip install git+https://github.com/lbryio/lbryschema.git
@@ -42,6 +44,7 @@ jobs:
 
     - name: "Integration Tests"
       install:
+        - sudo apt-get install libdbus-glib-1-dev
         - pip install tox-travis coverage
         - pushd .. && git clone https://github.com/lbryio/electrumx.git --branch lbryumx && popd
         - pushd .. && git clone https://github.com/lbryio/orchstr8.git && popd
@@ -74,6 +77,7 @@ jobs:
       name: "Linux"
       python: "3.6"
       install:
+        - sudo apt-get install libdbus-glib-1-dev
         - pip3 install pyinstaller
         - pip3 install git+https://github.com/lbryio/torba.git
         - pip3 install git+https://github.com/lbryio/lbryschema.git
