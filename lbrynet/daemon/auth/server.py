@@ -18,13 +18,14 @@ from lbrynet.core import utils
 from lbrynet.core.Error import ComponentsNotStarted, ComponentStartConditionNotMet
 from lbrynet.core.looping_call_manager import LoopingCallManager
 from lbrynet.daemon.ComponentManager import ComponentManager
-from .util import APIKey, get_auth_message, LBRY_SECRET
+from .keyring import APIKey
 from .undecorated import undecorated
 from .factory import AuthJSONRPCResource
 from lbrynet.daemon.json_response_encoder import JSONResponseEncoder
 log = logging.getLogger(__name__)
 
 EMPTY_PARAMS = [{}]
+LBRY_SECRET = "LBRY_SECRET"
 
 
 class JSONRPCError:
@@ -211,9 +212,16 @@ class AuthJSONRPCServer(AuthorizedBase):
 
         try:
             self.server = self.get_server_factory()
-            self.listening_port = reactor.listenTCP(
-                conf.settings['api_port'], self.server, interface=conf.settings['api_host']
-            )
+            if self.server.use_ssl:
+                log.info("Using SSL")
+                self.listening_port = reactor.listenSSL(
+                    conf.settings['api_port'], self.server, self.server.options, interface=conf.settings['api_host']
+                )
+            else:
+                log.info("Not using SSL")
+                self.listening_port = reactor.listenTCP(
+                    conf.settings['api_port'], self.server, interface=conf.settings['api_host']
+                )
             log.info("lbrynet API listening on TCP %s:%i", conf.settings['api_host'], conf.settings['api_port'])
             yield self.setup()
             self.analytics_manager.send_server_startup_success()
@@ -564,7 +572,7 @@ class AuthJSONRPCServer(AuthorizedBase):
     def _verify_token(self, session_id, message, token):
         if token is None:
             raise InvalidAuthenticationToken('Authentication token not found')
-        to_auth = get_auth_message(message)
+        to_auth = json.dumps(message, sort_keys=True)
         api_key = self.sessions.get(session_id)
         if not api_key.compare_hmac(to_auth, token):
             raise InvalidAuthenticationToken('Invalid authentication token')
