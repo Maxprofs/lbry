@@ -38,7 +38,7 @@ setup(
         'txJSON-RPC',
         'treq',
         'docopt',
-        'colorama==0.3.7',
+        'colorama==0.4.4',
         'six'
     ],
     extras_require={
