@@ -26,7 +26,7 @@ setup(
         'twisted[tls]==18.7.0',
         'appdirs',
         'distro',
-        'base58==1.0.0',
+        'base58==2.1.0',
         'envparse',
         'jsonrpc',
         'cryptography',
