@@ -44,7 +44,7 @@ setup(
     extras_require={
         'test': (
             'mock>=2.0,<3.0',
-            'faker==0.8.17',
+            'faker==5.8.0',
             'orchstr8>=0.0.4'
         )
     }
